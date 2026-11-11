@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEB FATİH Projesi Faz-4 Muayene ve Kabul Kontrol Sistemi</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+            color: #0f172a;
+        }
+
+        /* Custom Toggle Switch Styling */
+        .toggle-btn {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+        }
+        .toggle-btn.is-on {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            color: #ffffff;
+            border-color: #15803d;
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.35);
+        }
+        .toggle-btn.is-off {
+            background-color: #f8fafc;
+            color: #64748b;
+            border-color: #cbd5e1;
+        }
+        .toggle-btn.is-off:hover {
+            background-color: #e2e8f0;
+            color: #334155;
+        }
+
+        .check-row {
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .check-row.row-on {
+            background-color: #f0fdf4;
+            border-left: 5px solid #16a34a;
+        }
+        .check-row.row-off {
+            background-color: #ffffff;
+            border-left: 5px solid #cbd5e1;
+        }
+
+        /* Print & PDF Specific Styles */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 10mm;
+            }
+            body {
+                background-color: #ffffff !important;
+                font-size: 11px !important;
+                color: #000000 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            .category-body {
+                display: block !important;
+            }
+            .category-card {
+                break-inside: auto;
+                margin-bottom: 12px !important;
+                box-shadow: none !important;
+                border: 1px solid #94a3b8 !important;
+            }
+            .check-row {
+                break-inside: avoid;
+                page-break-inside: avoid;
+                padding: 6px 10px !important;
+                border-bottom: 1px solid #e2e8f0 !important;
+            }
+            .check-row.row-on {
+                background-color: #dcfce7 !important;
+                border-left: 4px solid #16a34a !important;
+            }
+            .check-row.row-off {
+                background-color: #ffffff !important;
+                border-left: 4px solid #94a3b8 !important;
+            }
+            .toggle-btn {
+                padding: 3px 10px !important;
+                font-size: 10px !important;
+                box-shadow: none !important;
+            }
+            .toggle-btn.is-on {
+                background: #16a34a !important;
+                color: #ffffff !important;
+                border: 1px solid #15803d !important;
+            }
+            .toggle-btn.is-off {
+                background: #f1f5f9 !important;
+                color: #475569 !important;
+                border: 1px solid #94a3b8 !important;
+            }
+            .commission-section {
+                break-inside: avoid;
+                page-break-inside: avoid;
+                margin-top: 16px !important;
+                border: 2px solid #1e293b !important;
+                box-shadow: none !important;
+            }
+            input, select, textarea {
+                border: 1px solid #cbd5e1 !important;
+                background-color: transparent !important;
+                box-shadow: none !important;
+            }
+            .note-input:placeholder-shown {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-16">
+
+    <!-- Top Official Banner -->
+    <header class="bg-gradient-to-r from-red-800 via-red-700 to-slate-900 text-white shadow-lg border-b-4 border-red-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur flex items-center justify-center border border-white/20 shrink-0">
+                        <i class="fa-solid fa-network-wired text-2xl text-red-200"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-red-200">
+                            <span>T.C. Millî Eğitim Bakanlığı • YEĞİTEK</span>
+                            <span>•</span>
+                            <span>2025 Teknik Şartnamesi & Ekspertiz Uyumlu</span>
+                        </div>
+                        <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight mt-0.5">
+                            FATİH Projesi Faz-4 Yerel Alan Ağı Muayene ve Kabul Kontrol Sistemi
+                        </h1>
+                        <p class="text-xs sm:text-sm text-slate-200 mt-0.5">
+                            Mahalli Kontrol Teşkilatı, Geçici Kabul ve Kesin Kabul Komisyonu Denetim Rehberi
+                        </p>
+                    </div>
+                </div>
+                <!-- Top Print / PDF Button -->
+                <div class="flex items-center gap-2.5 no-print shrink-0">
+                    <button onclick="openExpertModal()" class="px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-semibold border border-white/20 transition flex items-center gap-2">
+                        <i class="fa-solid fa-boxes-stacked text-amber-300"></i>
+                        <span>Ekspertiz Ürün Listesi</span>
+                    </button>
+                    <button onclick="printDocument()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-bold shadow-lg shadow-emerald-900/30 transition flex items-center gap-2 border border-emerald-400">
+                        <i class="fa-solid fa-file-pdf text-base"></i>
+                        <span>Sayfayı Yazdır / PDF Kaydet</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 space-y-6">
+
+        <!-- School & Inspection Metadata Card -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-solid fa-school text-red-600 text-lg"></i>
+                    <h2 class="text-base font-bold text-slate-800 uppercase tracking-wide">Okul ve Muayene Kabul Bilgileri</h2>
+                </div>
+                <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full">PDF Çıktısında Görünür</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Okul / Kurum Adı</label>
+                    <input type="text" id="meta-school" oninput="saveMeta()" placeholder="Örn: Atatürk Anadolu Lisesi" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">İl / İlçe</label>
+                    <input type="text" id="meta-city" oninput="saveMeta()" placeholder="Örn: Ankara / Çankaya" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Kurum Kodu / CBS Bina Kodu</label>
+                    <input type="text" id="meta-code" oninput="saveMeta()" placeholder="Örn: 745812 / CBS-1042" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Muayene / Kabul Türü</label>
+                    <select id="meta-type" onchange="saveMeta()" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none bg-white">
+                        <option value="Mahalli Geçici Kabul Komisyonu">Mahalli Geçici Kabul Komisyonu</option>
+                        <option value="Mahalli Kontrol Teşkilatı Denetimi">Mahalli Kontrol Teşkilatı Denetimi</option>
+                        <option value="Mahalli Kesin Kabul Komisyonu">Mahalli Kesin Kabul Komisyonu</option>
+                        <option value="Merkezi Kabul / Denetim Komisyonu">Merkezi Kabul / Denetim Komisyonu</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Yüklenici Firma</label>
+                    <input type="text" id="meta-contractor" oninput="saveMeta()" placeholder="Yüklenici Firma Adı" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Kabinet Tipi & Pano Tipi</label>
+                    <input type="text" id="meta-cab" oninput="saveMeta()" placeholder="Örn: 26U Lande / Tip-2 Pano (8 Linye)" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Toplam Derslik / İdari Uç / AP Sayısı</label>
+                    <input type="text" id="meta-counts" oninput="saveMeta()" placeholder="Örn: 24 ET, 18 İdari, 3 AP" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Kontrol / Kabul Tarihi</label>
+                    <input type="date" id="meta-date" onchange="saveMeta()" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none">
+                </div>
+            </div>
+        </section>
+
+        <!-- Sticky Progress & Filter Control Bar (Hidden in Print, Summary Shown) -->
+        <section class="sticky top-2 z-30 bg-white/95 backdrop-blur-md rounded-2xl shadow-md border border-slate-200 p-4">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <!-- Progress Stats -->
+                <div class="flex-1">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                        <div class="flex items-center gap-3">
+                            <span class="text-sm font-bold text-slate-800">Genel Kontrol İlerlemesi:</span>
+                            <span id="stat-percent" class="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800">0%</span>
+                        </div>
+                        <div class="flex items-center gap-4 text-xs font-semibold">
+                            <span class="flex items-center gap-1.5 text-slate-700">
+                                <i class="fa-solid fa-list-check text-slate-500"></i>
+                                Toplam: <strong id="stat-total">0</strong>
+                            </span>
+                            <span class="flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
+                                <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                                ON (Uygun): <strong id="stat-on">0</strong>
+                            </span>
+                            <span class="flex items-center gap-1.5 text-amber-700 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200">
+                                <i class="fa-solid fa-clock text-amber-600"></i>
+                                OFF (Bekleyen/Eksik): <strong id="stat-off">0</strong>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="w-full h-3 bg-slate-200 rounded-full overflow-hidden">
+                        <div id="progress-bar" class="h-full bg-gradient-to-r from-emerald-500 to-green-600 transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Action & Filter Controls -->
+                <div class="flex flex-wrap items-center gap-2 no-print">
+                    <div class="relative flex-grow sm:flex-grow-0">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" id="search-input" oninput="renderChecklist()" placeholder="Maddelerde ara (örn: Fluke, 95cm)..." class="w-full sm:w-56 pl-8 pr-3 py-2 text-xs rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+
+                    <select id="filter-status" onchange="renderChecklist()" class="px-3 py-2 text-xs font-semibold rounded-xl border border-slate-300 bg-slate-50 text-slate-700 outline-none cursor-pointer">
+                        <option value="all">Tüm Maddeleri Göster</option>
+                        <option value="off">Sadece OFF (Bekleyen/Eksik)</option>
+                        <option value="on">Sadece ON (Onaylananlar)</option>
+                    </select>
+
+                    <button onclick="toggleAllItems(true)" class="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                        <i class="fa-solid fa-check-double"></i>
+                        <span>Tümünü ON Yap</span>
+                    </button>
+
+                    <button onclick="toggleAllItems(false)" class="px-3 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-rotate-left"></i>
+                        <span>Sıfırla (OFF)</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Reference Highlight Cards (Critical Numbers in Spec) -->
+        <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 no-print">
+            <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                <div class="text-[11px] font-bold text-slate-400 uppercase">Max Kablo & Test</div>
+                <div class="text-sm font-extrabold text-slate-800 mt-0.5">≤ 90 Metre</div>
+                <div class="text-[11px] text-slate-500">Fluke PASS Zorunlu</div>
+            </div>
+            <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                <div class="text-[11px] font-bold text-slate-400 uppercase">Topraklama Direnci</div>
+                <div class="text-sm font-extrabold text-emerald-700 mt-0.5">0 - 3 Ohm Arası</div>
+                <div class="text-[11px] text-slate-500">3 Bakır Çubuk + Gem Tozu</div>
+            </div>
+            <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                <div class="text-[11px] font-bold text-slate-400 uppercase">Tahta Altı PVC</div>
+                <div class="text-sm font-extrabold text-slate-800 mt-0.5">85 cm / 95 cm</div>
+                <div class="text-[11px] text-slate-500">İlkokul 85 / Orta-Lise 95cm</div>
+            </div>
+            <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                <div class="text-[11px] font-bold text-slate-400 uppercase">Patch Kablo Sırası</div>
+                <div class="text-sm font-extrabold text-slate-800 mt-0.5">Tur-Sarı-Kır-Bey-Mav</div>
+                <div class="text-[11px] text-slate-500">Uplink•AP•ET•İdari•BT</div>
+            </div>
+            <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                <div class="text-[11px] font-bold text-slate-400 uppercase">Linye & Buat Kuralı</div>
+                <div class="text-sm font-extrabold text-slate-800 mt-0.5">Max 3 / Max 6</div>
+                <div class="text-[11px] text-slate-500">Linye Buat 3, Sigorta 6 Sınıf</div>
+            </div>
+            <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                <div class="text-[11px] font-bold text-slate-400 uppercase">Süre & Garanti</div>
+                <div class="text-sm font-extrabold text-red-700 mt-0.5">1 Ay Kurulum / 5 Yıl</div>
+                <div class="text-[11px] text-slate-500">Kesin Kabul: +6 Ay Sonra</div>
+            </div>
+        </section>
+
+        <!-- Dynamic Categorized Checklist Container -->
+        <div id="checklist-container" class="space-y-5"></div>
+
+        <!-- COMMISSION DECISION & 3 SEPARATE SIGNATURE SECTIONS (AT THE END OF PAGE & PDF) -->
+        <section id="commission-section" class="commission-section bg-white rounded-2xl shadow-md border-2 border-slate-800 p-6 mt-10">
+            <div class="border-b-2 border-slate-800 pb-3 mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                    <h2 class="text-lg font-extrabold text-slate-900 uppercase tracking-wide flex items-center gap-2">
+                        <i class="fa-solid fa-file-signature text-red-700"></i>
+                        <span>MUAYENE VE KABUL KOMİSYONU DEĞERLENDİRME VE İMZA BÖLÜMÜ</span>
+                    </h2>
+                    <p class="text-xs text-slate-600 mt-0.5">
+                        MEB FATİH Projesi Faz-4 Yerel Alan Ağı Kurulum İşi Teknik Şartnamesi (Madde 40, 41, 42, 44 ve 45) hükümlerine göre düzenlenmiştir.
+                    </p>
+                </div>
+                <div id="print-summary-badge" class="text-xs font-bold px-3 py-1.5 rounded-xl bg-slate-100 text-slate-800 border border-slate-300">
+                    Kontrol Özeti: 0 / 0 Uygun
+                </div>
+            </div>
+
+            <!-- General Notes / Deficiencies Textarea -->
+            <div class="mb-6">
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5">
+                    Komisyon Görüşü, Tespit Edilen Eksiklikler / Kusurlar ve Verilen Süre (Varsa):
+                </label>
+                <textarea id="meta-general-notes" oninput="saveMeta()" rows="3" placeholder="Yapılan muayene ve kabul incelemesi sonucunda işin şartnameye uygunluğu veya tespit edilen noksanlıklar ile tamamlanması için verilen süreyi buraya yazınız..." class="w-full p-3 text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 outline-none"></textarea>
+            </div>
+
+            <!-- 3 Separate Sections for Commission Members -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- 1. KOMİSYON BAŞKANI -->
+                <div class="rounded-xl border-2 border-slate-300 bg-slate-50/60 p-4 flex flex-col justify-between">
+                    <div>
+                        <div class="bg-slate-800 text-white text-center py-2 px-3 rounded-lg font-bold text-sm uppercase tracking-wider mb-3">
+                            1. KOMİSYON BAŞKANI
+                        </div>
+                        <p class="text-[11px] text-slate-500 text-center mb-3 italic">
+                            (Okul Müdürü veya Görevlendirilen Komisyon Başkanı - Madde 40.2 / 41.1)
+                        </p>
+                        <div class="space-y-2.5">
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600">Adı ve Soyadı:</label>
+                                <input type="text" id="mem1-name" oninput="saveMeta()" placeholder="Adı Soyadı" class="w-full px-2.5 py-1.5 text-sm font-semibold rounded-lg border border-slate-300 bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600">Unvanı / Görevi:</label>
+                                <input type="text" id="mem1-title" oninput="saveMeta()" placeholder="Örn: Okul Müdürü / Şube Müdürü" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600">Kurumu / Sicil No:</label>
+                                <input type="text" id="mem1-inst" oninput="saveMeta()" placeholder="Görev Yaptığı Okul / Kurum" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 bg-white">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-5 pt-4 border-t border-dashed border-slate-400 text-center">
+                        <div class="h-16 flex items-end justify-center pb-1 text-xs text-slate-400 italic">
+                            İmza / Mühür
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1. UZMAN ÜYE -->
+                <div class="rounded-xl border-2 border-slate-300 bg-slate-50/60 p-4 flex flex-col justify-between">
+                    <div>
+                        <div class="bg-slate-800 text-white text-center py-2 px-3 rounded-lg font-bold text-sm uppercase tracking-wider mb-3">
+                            1. UZMAN ÜYE
+                        </div>
+                        <p class="text-[11px] text-slate-500 text-center mb-3 italic">
+                            (İl / İlçe BT Koordinatörü veya Belirlenen Uzman Personel - Madde 40.3 / 41.3)
+                        </p>
+                        <div class="space-y-2.5">
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600">Adı ve Soyadı:</label>
+                                <input type="text" id="mem2-name" oninput="saveMeta()" placeholder="Adı Soyadı" class="w-full px-2.5 py-1.5 text-sm font-semibold rounded-lg border border-slate-300 bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600">Unvanı / Branşı:</label>
+                                <input type="text" id="mem2-title" oninput="saveMeta()" placeholder="Örn: İl/İlçe BT Koordinatörü" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600">Kurumu / Sicil No:</label>
+                                <input type="text" id="mem2-inst" oninput="saveMeta()" placeholder="İl / İlçe MEM" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 bg-white">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-5 pt-4 border-t border-dashed border-slate-400 text-center">
+                        <div class="h-16 flex items-end justify-center pb-1 text-xs text-slate-400 italic">
+                            İmza
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. UZMAN ÜYE -->
+                <div class="rounded-xl border-2 border-slate-300 bg-slate-50/60 p-4 flex flex-col justify-between">
+                    <div>
+                        <div class="bg-slate-800 text-white text-center py-2 px-3 rounded-lg font-bold text-sm uppercase tracking-wider mb-3">
+                            2. UZMAN ÜYE
+                        </div>
+                        <p class="text-[11px] text-slate-500 text-center mb-3 italic">
+                            (Elektrik, Elektronik, Bilgisayar Uzmanı veya FATİH Eğitmeni - Madde 40.4 / 41.3)
+                        </p>
+                        <div class="space-y-2.5">
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600">Adı ve Soyadı:</label>
+                                <input type="text" id="mem3-name" oninput="saveMeta()" placeholder="Adı Soyadı" class="w-full px-2.5 py-1.5 text-sm font-semibold rounded-lg border border-slate-300 bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600">Unvanı / Branşı:</label>
+                                <input type="text" id="mem3-title" oninput="saveMeta()" placeholder="Örn: Elektrik-Elektronik Öğrt. / Mühendis" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600">Kurumu / Sicil No:</label>
+                                <input type="text" id="mem3-inst" oninput="saveMeta()" placeholder="Görev Yaptığı Kurum" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 bg-white">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-5 pt-4 border-t border-dashed border-slate-400 text-center">
+                        <div class="h-16 flex items-end justify-center pb-1 text-xs text-slate-400 italic">
+                            İmza
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Bottom Print Action Bar (Hidden in Print) -->
+            <div class="mt-6 pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 no-print">
+                <p class="text-xs text-slate-500">
+                    <i class="fa-solid fa-circle-info text-blue-600 mr-1"></i>
+                    Tüm seçimleriniz ve girdiğiniz komisyon üye bilgileri tarayıcınıza otomatik kaydedilir. Yazdır butonuna bastığınızda A4 PDF formatına uygun olarak tüm başlıklar ve imza alanları çıkar.
+                </p>
+                <button onclick="printDocument()" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-lg transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-print"></i>
+                    <span>Sayfayı Yazdır / PDF Olarak Kaydet</span>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Approved Expertise Products Modal (Ekspertiz.pdf Referans Tablosu) -->
+    <div id="expert-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 no-print">
+        <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[85vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
+            <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-solid fa-certificate text-amber-400 text-lg"></i>
+                    <h3 class="font-bold text-base">Faz-4 Ekspertiz Onaylı Marka ve Model Listesi (ekspertiz.pdf)</h3>
+                </div>
+                <button onclick="closeExpertModal()" class="text-slate-400 hover:text-white text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-4 text-xs">
+                <p class="text-slate-600">
+                    Şartname Madde 37.1 ve 49.7 gereği İDARE'nin onay vermediği hiçbir ürün kullanılamaz (Onaysız ürün kullanımında ürün 10 gün içinde değiştirilir ve 50.000 TL ceza uygulanır). Ekspertiz dosyasında yer alan onaylı ürünler:
+                </p>
+                <div class="overflow-x-auto border border-slate-200 rounded-xl">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 border-b border-slate-200">
+                                <th class="p-2.5 font-bold">Kategori</th>
+                                <th class="p-2.5 font-bold">Marka / Firma</th>
+                                <th class="p-2.5 font-bold">Model / Kod</th>
+                                <th class="p-2.5 font-bold">Açıklama</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200">
+                            <tr><td class="p-2.5 font-semibold">Enerji & Toprak Kablo</td><td class="p-2.5 font-bold text-blue-700">VATAN KABLO</td><td class="p-2.5">N2XH 4x6 / 4x10 / 4x16, 052XZ1-F 3x2.5 / 3x4, H07Z1-K 10mm² / 4mm²</td><td class="p-2.5">Ana Pano Besleme, Linye ve Topraklama Kabloları</td></tr>
+                            <tr><td class="p-2.5 font-semibold">Rack Kabinet & Fan</td><td class="p-2.5 font-bold text-blue-700">LANDE</td><td class="p-2.5">LN-WX09U6060-BL (9U), LN-TX16U/26U/42U 8080-BL-1</td><td class="p-2.5">9U Duvar Tipi, 16U/26U/42U Dikili Tip Kabinet + Aksiyel Fan</td></tr>
+                            <tr><td class="p-2.5 font-semibold">Tahta Priz Sac Kapak</td><td class="p-2.5 font-bold text-blue-700">FACTOR LASER</td><td class="p-2.5">Özel Güvenlik Vidalı İki Parçalı Sac Kapak</td><td class="p-2.5">Etkileşimli Tahta Priz Modülü Metal Koruma Kapağı</td></tr>
+                            <tr><td class="p-2.5 font-semibold">Fatih Enerji Panosu</td><td class="p-2.5 font-bold text-blue-700">RST PANO</td><td class="p-2.5">5, 8, 11 ve 14 Linyeli Sistem Odası Panosu</td><td class="p-2.5">Tip-1, Tip-2, Tip-3 ve Tip-4 Fatih Enerji Panoları</td></tr>
+                            <tr><td class="p-2.5 font-semibold">Plastik (PVC) Kanal</td><td class="p-2.5 font-bold text-blue-700">MUTLUSAN</td><td class="p-2.5">100x50mm, 40x16mm, Ara Bölme, Alev Yaymayan Spiral/Buat/Klemens/UPS Priz</td><td class="p-2.5">Tüm PVC Kanal, Köşe Aksesuarları, Buat (110x110x74) ve Prizler</td></tr>
+                            <tr><td class="p-2.5 font-semibold">Sac Kablo Kanalı</td><td class="p-2.5 font-bold text-blue-700">KIRAÇ</td><td class="p-2.5">100'lük Sac Tava ve Tava Kapağı</td><td class="p-2.5">Pregalvaniz Delikli Sac Kablo Kanalı ve Kapakları</td></tr>
+                            <tr><td class="p-2.5 font-semibold">Data & Fiber Altyapı</td><td class="p-2.5 font-bold text-blue-700">ERAT</td><td class="p-2.5">Cat6 Kablo, Keystone Jack, UTP/Fiber Patch Panel, Patch Cordlar, 4 Core Fiber</td><td class="p-2.5">20cm/1m/2m/3m Renkli Patch Cordlar, LC Pigtail, Coupler, Kaset</td></tr>
+                            <tr><td class="p-2.5 font-semibold">HDPE Boru & Direk</td><td class="p-2.5 font-bold text-blue-700">PINARSAN / NETAŞ</td><td class="p-2.5">32mm Telekom HDPE Boru / 7 Metrelik Direk</td><td class="p-2.5">Binalar arası dış ortam geçiş borusu ve direği</td></tr>
+                            <tr><td class="p-2.5 font-semibold">Kablosuz Erişim (AP)</td><td class="p-2.5 font-bold text-blue-700">HUAWEI</td><td class="p-2.5">AirEngine 5773-22W</td><td class="p-2.5">Wi-Fi 7 (802.11be) Çift Radyo Kablosuz Erişim Cihazı</td></tr>
+                            <tr><td class="p-2.5 font-semibold">Ethernet Anahtar (Switch)</td><td class="p-2.5 font-bold text-blue-700">HUAWEI</td><td class="p-2.5">S5735R-L8P4S / L8T4S / L24P4S / L24T4S / L48LP4S / L48T4S-A-V2</td><td class="p-2.5">8, 24 ve 48 Port PoE / Non-PoE Gigabit Switchler</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="bg-slate-50 px-6 py-3 border-t border-slate-200 flex justify-end">
+                <button onclick="closeExpertModal()" class="px-4 py-2 bg-slate-800 text-white text-xs font-bold rounded-xl hover:bg-slate-700">Kapat</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Comprehensive Inspection Checklist Data derived from Faz-4 Technical Specification (2025), 383-Item Checklist & Ekspertiz List
+        const CHECKLIST_DATA = [
+            {
+                id: "cat-1",
+                title: "1. Dokümantasyon, Tutanaklar, Kat Planı ve Test Raporları",
+                icon: "fa-folder-open",
+                badge: "Madde 5, 29, 34, 44",
+                items: [
+                    {
+                        id: "1.1",
+                        code: "Madde 5.1 & 38.1",
+                        title: "Zorunlu Tutanak ve Formların Islak İmzalı Teslimi",
+                        desc: "Keşif Formu (Okul Müdürü, BT Koordinatörü ve Yüklenici imzalı), Okulda İşe Başlama Tutanağı, Okulda İş Bitirme Tutanağı, Hasarsızlık Raporu ve Malzeme Teslim Tutanağı eksiksiz ve ıslak imzalı olarak dosyada mevcut mu?"
+                    },
+                    {
+                        id: "1.2",
+                        code: "Madde 5.2 & 8.31",
+                        title: "Okul Kat Planlarının Kabinet Kapağına Yapıştırılması",
+                        desc: "Okulun fiziki durumuyla birebir örtüşen, her katı A4 sayfasına AutoCAD/Visio ile renkli basılmış, üzerinde kabinet, pano, sac tava, PVC kanal, buat, AP, priz ve gerçek metraj bilgileri yer alan onaylı Kat Planı şeffaf poşet dosya içinde kabinet ön kapağı iç kısmına yapıştırıldı mı?"
+                    },
+                    {
+                        id: "1.3",
+                        code: "Madde 5.3.4 & 34.3.1",
+                        title: "Topraklama Ölçüm Formu (0-3 Ohm) ve Kazı Video/Fotoğrafları",
+                        desc: "Okul idaresi gözetiminde yapılan topraklama çalışmasına (kazı, 3 bakır çubuk çakılması, gem tozu uygulaması) ait fotoğraf ve videolar dijital ortamda alındı mı ve 0-3 Ohm arası ölçüm değerini gösteren ıslak imzalı Topraklama Formu teslim edildi mi?"
+                    },
+                    {
+                        id: "1.4",
+                        code: "Madde 29.21 - 29.24",
+                        title: "Fluke UTP Kablo Test Raporları (PASS Onaylı)",
+                        desc: "Çekilen tüm UTP bakır kablolar için NEXT, FEXT, Insertion Loss, Return Loss değerlerini, kablo uzunluğunun 90 metreyi aşmadığını, kablo etiket numaralarını ve test cihazı seri numarasını içeren PASS (Başarılı) onaylı Fluke Test Raporları teslim edildi mi?"
+                    },
+                    {
+                        id: "1.5",
+                        code: "Madde 5.3.1 & 5.3.2",
+                        title: "Kanal İçi ve Kat Geçiş Tadilat Fotoğraf/Video Kayıtları",
+                        desc: "Plastik ve sac kablo kanalı montajları bittikten sonra kapaklar açıkken çekilen örnek fotoğraf/videolar ile kat/şaft geçişlerinde tadilat öncesi ve sonrası fotoğraflar dijital ortamda sunuldu mu?"
+                    },
+                    {
+                        id: "1.6",
+                        code: "Madde 27.1 & 36.5",
+                        title: "Sökülen Eski Malzeme Tutanağı ve 1 Aylık Kurulum Süresi",
+                        desc: "Güzergahta bulunan ve kullanıma uygun olmayan eski UTP kablo ve kanallar sökülerek tutanakla okul idaresine teslim edildi mi? Binadaki kurulum işe başlama tarihinden itibaren 1 (bir) ay içinde tamamlandı mı?"
+                    }
+                ]
+            },
+            {
+                id: "cat-2",
+                title: "2. Ekspertiz Onaylı Malzeme, Marka ve Model Uyumu",
+                icon: "fa-boxes-stacked",
+                badge: "Ekspertiz & Madde 37",
+                items: [
+                    {
+                        id: "2.1",
+                        code: "Ekspertiz S.1",
+                        title: "Enerji ve Topraklama Kabloları (VATAN KABLO)",
+                        desc: "Ana pano beslemesinde VATAN N2XH 0.6/1kV (4x6, 4x10 veya 4x16mm²), linye hatlarında VATAN 052XZ1-F 300/500V (3x2.5mm² ve 3x4mm² halojensiz), topraklamada VATAN H07Z1-K (10mm² ve 4mm²) kabloları ile 60cm saf bakır çubuk ve Gem Tozu kullanıldı mı?"
+                    },
+                    {
+                        id: "2.2",
+                        code: "Ekspertiz S.2",
+                        title: "Rack Kabinetler (LANDE) ve Metal Priz Kapağı (FACTOR LASER)",
+                        desc: "Kabinetlerde LANDE marka (9U duvar tipi LN-WX09U6060-BL; 16U, 26U, 42U dikili tip LN-TX serisi) ve etkileşimli tahta priz modülü sac kapağında FACTOR LASER marka ürün kullanıldı mı?"
+                    },
+                    {
+                        id: "2.3",
+                        code: "Ekspertiz S.3",
+                        title: "Fatih Enerji Panoları (RST PANO)",
+                        desc: "Sistem odası ve tali enerji panolarında RST PANO marka (5 linyeli Tip-1, 8 linyeli Tip-2, 11 linyeli Tip-3, 14 linyeli Tip-4) veya BT İl Koordinatörü onayıyla önceki fazlardan kalan sağlam panolar kullanıldı mı?"
+                    },
+                    {
+                        id: "2.4",
+                        code: "Ekspertiz S.4-5",
+                        title: "PVC Kablo Kanalları, Buat ve Prizler (MUTLUSAN)",
+                        desc: "100x50mm ve 40x16mm PVC kanallar, ara bölme (seperatör), hareketli iç/dış köşeler, L ve T parçalar, uç tapalar, alev yaymayan termoplastik buat (110x110x74), alev yaymayan spiral/rekorlar, 45x45 data priz kapağı ve çocuk korumalı UPS/Topraklı prizlerde MUTLUSAN kullanıldı mı?"
+                    },
+                    {
+                        id: "2.5",
+                        code: "Ekspertiz S.6-7",
+                        title: "Data, Patch Cord ve Fiber Optik Bileşenler (ERAT)",
+                        desc: "Cat6 UTP kablo, Keystone Jack, 24 Port UTP Patch Panel, renkli Cat6 Patch Cordlar (20cm, 1m, 2m, 3m), 4 Core Fiber Optik Kablo, Fiber Patch Panel, F/O Kaset, LC Pigtail ve LC-LC fiber patch kablolarda ERAT marka kullanıldı mı?"
+                    },
+                    {
+                        id: "2.6",
+                        code: "Ekspertiz S.7-8",
+                        title: "Aktif Cihazlar (HUAWEI) ve Sac Tava (KIRAÇ)",
+                        desc: "Kablosuz Erişim Cihazında HUAWEI AirEngine 5773-22W, Ethernet Anahtarlarda HUAWEI S5735R-L serisi (8/24/48 Port PoE ve Non-PoE) ve pregalvaniz sac kablo tavası/kapaklarında KIRAÇ marka ürünler kullanıldı mı?"
+                    }
+                ]
+            },
+            {
+                id: "cat-3",
+                title: "3. Sistem Odası ve Kabinet Kurulumu (42U, 26U, 16U, 9U, 4U)",
+                icon: "fa-server",
+                badge: "Madde 7 & Madde 8",
+                items: [
+                    {
+                        id: "3.1",
+                        code: "Madde 7.5 & 7.6",
+                        title: "Sistem Odası Cam Filmi ve Havalandırma Menfezi",
+                        desc: "Sistem odasındaki kabinetlere güneş ışığı vurmaması için camlar ışık geçirmeyen filmle kaplandı mı? Odada çalışan klima yoksa pencere veya kapıya en az 25x25 cm ebatlarında toz önleyici, açılıp kapanabilen klapeli havalandırma menfezi takıldı mı?"
+                    },
+                    {
+                        id: "3.2",
+                        code: "Madde 7.7 & 7.8",
+                        title: "Kalorifer/Su Tesisatı Güvenliği ve Kapak Açılım Mesafesi",
+                        desc: "Sistem odasında kalorifer peteği varsa kapatıldı mı ve su tesisatı riski giderildi mi? Kabinetin konumu ön, arka ve yan kapakların rahatça açılıp müdahale edilmesine uygun mu?"
+                    },
+                    {
+                        id: "3.3",
+                        code: "Madde 8.5 - 8.7, 8.13",
+                        title: "Temperli Cam Kapak, Kilitler ve Duvar Tipi L Sabitleme",
+                        desc: "Kabinet ön kapağı 4mm darbeye dayanıklı temperli camlı mı? Tüm kapaklar aynı anahtarla kilitlenebiliyor mu? 9U ve 4U duvar tipi kabinetlerde içten vidalama dışında kabinet altından boydan 'L sabitleme aparatı' ile ilave sabitleme yapıldı mı?"
+                    },
+                    {
+                        id: "3.4",
+                        code: "Madde 8.12, 8.19, 8.20",
+                        title: "Deprem Ayağı, Frenli Tekerlekler ve Hareketli Raf",
+                        desc: "42U, 26U ve 16U dikili tip kabinetlerin her iki yanında boydan tek parça bar şeklinde deprem ayağı usulüne uygun monte edildi mi? Ön iki tekerlek frenli döner tip mi? 42U ve 26U kabinetlerde 1 adet orijinal hareketli 1U raf mevcut mu?"
+                    },
+                    {
+                        id: "3.5",
+                        code: "Madde 8.15 - 8.18",
+                        title: "Kabinet İçi Sigortalı Grup Prizler ve Beslemesi",
+                        desc: "42U/26U kabinetlerde en az 2x6'lı, 16U/9U kabinetlerde 1x6'lı sigortalı (16A) grup priz alt arka U alanına monte edildi mi? Grup prizin enerjisi Fatih Enerji Panosundaki 16A kabinet sigortasından (derslik olmayan ek binada en yakın panoya takılan 16A sigortadan) alındı mı?"
+                    },
+                    {
+                        id: "3.6",
+                        code: "Madde 8.21 - 8.28",
+                        title: "Termostatlı Fan Ünitesi ve Üfleme Yönü",
+                        desc: "Kabinet üst kısmında U alanı işgal etmeyen termostatlı ve bilyeli fan ünitesi (42U: 6 fan, 26U: 4 fan, 16U: 4 fan, 9U: 2 fan; 4U fansız) çalışıyor mu, havayı kabinet içinden dışarıya doğru üflüyor mu ve fan topraklaması/yüksüklü bağlantısı yapıldı mı?"
+                    },
+                    {
+                        id: "3.7",
+                        code: "Madde 8.30",
+                        title: "Kabinet Dış Kapak Etiketleri (Fatih Logosu, PYS, CBS Kodu)",
+                        desc: "Kabinet kapağına 'Fatih' logosu, arıza çağrıları için FatihPYS internet adresi, kabinet adı (A, B, C şeklinde) ve CBS bina kodu etiketleri eksiksiz yapıştırıldı mı?"
+                    },
+                    {
+                        id: "3.8",
+                        code: "Madde 8.32 (Sayfa 16-21)",
+                        title: "Kabinet U Yerleşim Planına Birebir Uygunluk",
+                        desc: "Cihazların kabinet içi U sıralaması şartname şemasına birebir uygun mu? (Örn: 1.U Boş, 2.U Router Patch Panel, 3.U Router, 4.U Boş/Fiber Patch Panel, 5.U Cat Patch Panel, 6.U Switch, 7.U Cat Patch Panel, 8.U Boş, 9.U Cat PP, 10.U Switch, 11.U Cat PP...)"
+                    }
+                ]
+            },
+            {
+                id: "cat-4",
+                title: "4. Patch Panel, Renkli Patch Kablo ve Etiketleme Düzeni",
+                icon: "fa-ethernet",
+                badge: "Madde 9, 10, 11, 12",
+                items: [
+                    {
+                        id: "4.1",
+                        code: "Madde 9.1 - 9.13",
+                        title: "Metal Patch Panel, Kablo Tutucu ve Kablo Soyma Standartları",
+                        desc: "UTP ve Fiber Patch Paneller 1U, tamamen metal ve arkalarında orijinal fabrikasyon kablo tutucu aparatı var mı? Tüm kablolar panele aynı yönden giriyor mu, keystone jacklara çakılırken kablo seperatörü korunmuş ve yalnızca giriş noktasına kadar soyulmuş mu?"
+                    },
+                    {
+                        id: "4.2",
+                        code: "Madde 9.7 & 9.16.3",
+                        title: "Feedthrough Keystone Jack ve Yedek Port Jackları",
+                        desc: "Patch panellerin son portlarına uplink/downlink/ADSL için 1 adet feedthrough keystone jack takıldı mı? 1. patch panel hariç ardışık her iki patch panelin feedthrough portları arkadan patch kablo ile birbirine bağlandı mı? Switchte yedek bırakılan (2 veya 4) portun boş keystone jackları da panele takıldı mı?"
+                    },
+                    {
+                        id: "4.3",
+                        code: "Madde 10.5",
+                        title: "UTP Patch Kablo Renk ve Uzunluk Standartları",
+                        desc: "Kablo renk ve boyları doğru mu? (Turuncu 20cm: ADSL/Router ve Uplink/Downlink; Sarı 20cm: Kabinet içi AP ve odada AP bağlantısı; Kırmızı 20cm kabinet içi ET ve 1m sınıfta ET bağlantısı; Beyaz 20cm kabinet içi İdari ve 3m odada PC bağlantısı; Mavi 20cm kabinet içi BT ve 1m BT dağıtıcı switch bağlantısı)"
+                    },
+                    {
+                        id: "4.4",
+                        code: "Madde 12.1.1 & 12.1.2",
+                        title: "Switch Port Bağlantı Yönü ve Renk Sıralaması",
+                        desc: "Switchin çift numaralı portları (2,4,6...) üstteki patch panele, tek numaralı portları (1,3,5...) alttaki patch panele bağlandı mı? Sıralama: Son portlara Turuncu (Uplink/Router), 1. porttan başlayarak sırasıyla tüm Sarı (AP) -> tüm Kırmızı (ET) -> tüm Beyaz (İdari) -> tüm Mavi (BT) takılıp boş portlar son switche bırakıldı mı?"
+                    },
+                    {
+                        id: "4.5",
+                        code: "Madde 9.14 - 9.16 & 29.25",
+                        title: "IP51 Şeffaf Kılıflı Uçtan Uca Birebir Etiketleme",
+                        desc: "1-3-5. patch paneller çift (A02, A04...), 2-4-6. patch paneller tek (A01, A03...) sayı ile etiketlendi mi? Patch panel ön yüzü, arkadaki UTP kablo, patch kablonun iki ucu (SW1-2 / A02), oda tarafındaki kablo ucu ve veri prizi/AP üzerindeki IP51 şeffaf koruma kılıflı etiketler birbiriyle birebir aynı mı?"
+                    },
+                    {
+                        id: "4.6",
+                        code: "Madde 9.5, 9.15 & 11",
+                        title: "Fiber Patch Panel ve LC-LC Single-Mode Patch Kablolar",
+                        desc: "Fiber patch panelde en az 4 core (2 core yedek dahil) LC sonlandırma yapıldı mı? Ön yüzünde hangi kabinetten geldiği/gittiği (Kabinet A, Kabinet B Yedek vb.) etiketlendi mi ve switch SFP portlarına 0.5m/1m/2m LC-LC Single-Mode LSOH fiber patch kablolarla bağlandı mı?"
+                    }
+                ]
+            },
+            {
+                id: "cat-5",
+                title: "5. Aktif Cihazlar (Ethernet Anahtarlar ve Kablosuz Erişim Cihazları - AP)",
+                icon: "fa-wifi",
+                badge: "Madde 6, 13, 14 - 23",
+                items: [
+                    {
+                        id: "5.1",
+                        code: "Madde 13.4, 14.4 - 14.6",
+                        title: "Switch & SFP Marka Bütünlüğü, IP Sıralaması ve Topraklama",
+                        desc: "Tüm Ethernet anahtarlar, SFP fiber modüller ve AP cihazları aynı marka (Huawei) mı? Kabinet içindeki switchlere yukarıdan aşağıya sırayla yönetim IP adresleri tanımlandı mı ve tüm switchlerin gövde topraklaması kabinet topraklama barasına bağlandı mı?"
+                    },
+                    {
+                        id: "5.2",
+                        code: "Madde 13.1, 14.2, 22.36",
+                        title: "Güncel Firmware, ZTP, 802.1x ve EBA Web Kimlik Doğrulama",
+                        desc: "Switch ve AP cihazlarına en son yazılım/güvenlik yamaları yüklendi mi? Zero Touch Provisioning (ZTP), VLAN, Port Security, DHCP Snooping ve EBA Portal / 802.1x / MAC tabanlı kimlik doğrulama konfigürasyonları eksiksiz çalışıyor mu?"
+                    },
+                    {
+                        id: "5.3",
+                        code: "Madde 6.6, 22.22, 27.45",
+                        title: "AP Kurulacak Mekanlar ve Tavan/Duvar Montajı",
+                        desc: "AP cihazları yalnızca şartnamede tanımlı 4 mekana (Öğretmenler Odası, BT Sınıfı, Z-Kütüphane, Toplantı/Konferans Salonu) monte edildi mi? Tavan montajlarında odanın orta noktasına 40x16mm PVC kanal ile götürülüp orijinal tırnaklı tavan kitiyle sağlam sabitlendi mi?"
+                    },
+                    {
+                        id: "5.4",
+                        code: "Madde 6.4, 27.35, 29.13",
+                        title: "BT Sınıfı Özel AP + Etkileşimli Tahta Bağlantısı",
+                        desc: "BT sınıfında AP'ye gelen UTP kablo dikey PVC'de açılan 20mm delikten çıkıp keystone jack + 20cm sarı patch kablo ile AP'ye girdi mi? AP üzerindeki ikinci Gigabit porttan Etkileşimli Tahtaya ek UTP kablo çekilip tahta altında keystone jack ile sonlandırıldı mı (ek uç sayılmadan)?"
+                    }
+                ]
+            },
+            {
+                id: "cat-6",
+                title: "6. Sac Kablo Kanalı (Tava) Teknik ve Uygulama Kontrolleri",
+                icon: "fa-ruler-combined",
+                badge: "Madde 24 & Madde 25",
+                items: [
+                    {
+                        id: "6.1",
+                        code: "Madde 24.4 - 24.7, 25.16",
+                        title: "Sac Tava Kalınlığı (0.8mm), Boyutu ve Konsol Aralığı (125cm)",
+                        desc: "Pregalvaniz sac tavalar en az 0.8mm kalınlık, 40mm yan derinlik ve 100-300mm genişlikte mi? Duvara L konsollar ve çelik dübellerle, tavana tijlerle sallanmayacak şekilde en fazla 125 cm aralıklarla sabitlendi mi?"
+                    },
+                    {
+                        id: "6.2",
+                        code: "Madde 25.7 - 25.14",
+                        title: "Kiriş Altı 10cm Kapak Boşluğu, Yükseklik ve Lazer Terazi Hizası",
+                        desc: "Tava kapağının açılabilmesi için tavan/kiriş ile tava arasında en az 10 cm boşluk bırakıldı mı? Yükseklik kurallarına (İlkokulda min 210cm, kiriş >260cm ise min 250cm, kiriş >280cm ise 280cm) uyularak lazer terazi ile dalgalanmasız monte edildi mi?"
+                    },
+                    {
+                        id: "6.3",
+                        code: "Madde 25.5, 25.15, 25.20",
+                        title: "Kiriş/Kolon Delinmemesi ve 45° Orijinal Dönüş Aparatları",
+                        desc: "Kiriş ve kolonlara kesinlikle delme işlemi yapılmadan etrafından 45 derecelik eğimli orijinal fabrikasyon dönüş, L ve T aparatları ile geçildi mi? Kalorifer/su borusu engellerinde tavanın yarısından azı kesilip kenarlarına koruyucu conta/fitil takıldı mı?"
+                    },
+                    {
+                        id: "6.4",
+                        code: "Madde 25.17, 25.24, 25.25",
+                        title: "Çapak Temizliği, Çinko Sprey, Kabinet İnişi ve Kapakların Kapatılması",
+                        desc: "Kesilen sac tava yüzeylerinde çapaklar temizlenip korozyona karşı çinko sprey/boya ve fitil uygulandı mı? Kabinete giren kablo sayısı >44 (veya >144) olduğunda sistem odasında kabinet altına kadar sac tava ile inildi mi? Kontrol sonrası tüm sac tava kapakları kapatıldı mı?"
+                    }
+                ]
+            },
+            {
+                id: "cat-7",
+                title: "7. Plastik Kablo Kanalı (PVC), Derslik ve İdari Oda Uygulamaları",
+                icon: "fa-chalkboard-user",
+                badge: "Madde 6, 26, 27, 33",
+                items: [
+                    {
+                        id: "7.1",
+                        code: "Madde 26.1 - 26.6, 27.7",
+                        title: "PVC Kanal Ölçüleri (100x50 / 40x16) ve Folyo Etiketlerin Sökülmesi",
+                        desc: "Ana kanallar 100x50mm (min 2mm et kalınlığı, içten kilitli kapak), AP kanalları 40x16mm (min 0.9mm, dıştan kilitli) mi? Teslim öncesi tüm 100x50mm kanallar üzerindeki marka yapışkanlı folyo ve etiketler tamamen söküldü mü?"
+                    },
+                    {
+                        id: "7.2",
+                        code: "Madde 27.9, 27.12, 27.29",
+                        title: "PVC Kanal Vidalama Düzeni (Derslik Çift Sıra, Koridor Zikzak)",
+                        desc: "Dübeller kanal üzerinden delinmeden önce duvara çakılıp vidalar pullu olarak sıkıldı mı? Koridor ve idari odalarda her 25 cm'de alt-üst dönüşümlü (zikzak), dersliklerde ise her 25 cm'de hem alt hem üst tüm deliklere çift sıra vida atıldı mı?"
+                    },
+                    {
+                        id: "7.3",
+                        code: "Madde 27.18 & 29.17",
+                        title: "Enerji ve Data Kabloları Arasında Ayraç (Seperatör) Kullanımı",
+                        desc: "Aynı plastik kanal içerisinden hem enerji hem de data kablosu geçen tüm güzergahlarda kuvvetli ve zayıf akımı ayıran kanal ayıracı (seperatör) kesintisiz kullanıldı mı?"
+                    },
+                    {
+                        id: "7.4",
+                        code: "Madde 27.30 - 27.32",
+                        title: "Derslik Etkileşimli Tahta (ET) PVC Kanal Ölçüleri (30cm / 85-95cm / 32cm)",
+                        desc: "Sol ekranlı tahtada kanal çerçeveyi 30 cm geçip aşağı indi mi? Yatay kanal yerden İlkokullarda 85 cm, Ortaokul ve Liselerde 95 cm yükseklikte ve tahta altına 32 cm ilerleyecek şekilde döşendi mi? Tavandan inen dikey kanal ile yatay kanal birleşiminde L aparat KULLANILMADAN 90° bindirme yapılıp dikey alt kapak silikonla sabitlendi mi?"
+                    },
+                    {
+                        id: "7.5",
+                        code: "Madde 6.5 - 6.7, 27.43, 33.6",
+                        title: "Oda Uç Sayıları (Max 5), Dağıtık Öğretmenler Odası ve Yasaklı Alanlar",
+                        desc: "Hiçbir odaya 5'ten fazla data ucu çekilmediği ve Şartname Madde 6.7'deki yasaklı alanlara (Elektrik/Pano odası, Kalorifer, Spor salonu, Koridor, Depo, Misafirhane vb.) uç çekilmediği doğrulandı mı? Öğretmenler odasında prizler yan yana 3'lü yapılmadan bilgisayar/yazıcı konumlarına göre dağıtık monte edildi mi?"
+                    },
+                    {
+                        id: "7.6",
+                        code: "Madde 27.3 - 27.5, 27.19",
+                        title: "Orijinal Köşe Aksesuarları, Max 30cm Spiral ve Alçı Tadilatı",
+                        desc: "Tüm dönüşlerde orijinal iç/dış köşe, L, T ve uç tapa aksesuarları kullanıldı mı? Açıkta kablo bırakılmadı mı, zorunlu geçişlerde kullanılan spiral boru 30 cm'yi aşmadı mı ve delinen/kırılan tüm duvar ve şaft geçişleri alçı ile düzgünce kapatıldı mı?"
+                    }
+                ]
+            },
+            {
+                id: "cat-8",
+                title: "8. UTP Bakır ve Fiber Optik Kablolama Uygulaması",
+                icon: "fa-bezier-curve",
+                badge: "Madde 28, 29, 30, 31",
+                items: [
+                    {
+                        id: "8.1",
+                        code: "Madde 28 & 29.2 - 29.6",
+                        title: "Cat6 LSOH Kablo, Kabinet İçi Pay (1m / 0.5m) ve Ayrı Spiral Boru",
+                        desc: "23 AWG Cat6 LSOH/HFFR kablolar 90 metreyi aşmıyor mu? Kabinet içinde 42U/26U/16U için 1 metre, 9U/4U için 0.5 metre kablo payı bırakılıp arka U düzenine çok sıkı olmadan klipslendi mi? Duvar/şaft geçişlerinde enerji ve data kabloları ayrı spiral borulardan geçirildi mi?"
+                    },
+                    {
+                        id: "8.2",
+                        code: "Madde 29.9 - 29.11, 33.1",
+                        title: "Dersliklerde Keystone Jack (10cm Pay) ve İdari Odalarda Veri Prizi",
+                        desc: "Dersliklerde veri prizi kullanılmadan, yatay PVC'nin üst kısmında açılan 20mm delikten en az 10 cm dışarı çıkan UTP kablo doğrudan keystone jack ile sonlandırılıp 1m kırmızı patch kablo ile tahtaya bağlandı mı? İdari odalarda ve BT dağıtıcı kabinet ucunda ise 45x45 veri prizi kullanıldı mı?"
+                    },
+                    {
+                        id: "8.3",
+                        code: "Madde 30 & 31",
+                        title: "Binalar Arası 4 Core Single-Mode Fiber Optik Kablo Çekimi",
+                        desc: "Binalar arası (veya bina içi >90m) geçişlerde en az 4 Core Single-Mode LSOH fiber kablo çekildi mi? (Rögar yoksa: <50m mesafede çelik gerdirme halatıyla min 5.50m yükseklikten; >50m mesafede 1m gömülü / 6m yüzeyde 7m direkle; kazıda min 70cm derinlikte HDPE boru + 20cm üstte uyarı bandı ile; enerji direkleri kesinlikle kullanılmadan)"
+                    }
+                ]
+            },
+            {
+                id: "cat-9",
+                title: "9. Bağımsız Fatih Topraklama Tesisatı",
+                icon: "fa-bolt-lightning",
+                badge: "Madde 34",
+                items: [
+                    {
+                        id: "9.1",
+                        code: "Madde 34.2 - 34.5",
+                        title: "Bağımsız Topraklama Sahası, 3 Saf Bakır Çubuk ve Gem Tozu",
+                        desc: "Okulun mevcut topraklamasından tamamen bağımsız olarak, bina dışında nemli alanda 40cm derinlikte ve 120cm aralıklı eşkenar üçgen çukur kazılıp, her çubuk için açılan 20x30cm çukura 20kg Gem Tozu + 20L su macunu doldurularak 3 adet Ø20mm 60cm saf bakır çubuk çakıldı mı?"
+                    },
+                    {
+                        id: "9.2",
+                        code: "Madde 34.6 - 34.12",
+                        title: "Bakır Klemens Bağlantısı, 10mm² H07Z1-K Kablo ve Çelik Boru Koruması",
+                        desc: "Çubuk bağlantıları sarma/burma yapılmadan bakır topraklama klemensi ile 10mm² H07Z1-K kabloya bağlandı mı? Yeraltından 30cm derinlikte PVC kaplı çelik spiral boru ve bina dış duvarında her 1 metrede bir metal kelepçeli galvaniz çelik boru içinden geçerek doğrudan Fatih Enerji Panosu toprak barasına eksiz bağlandı mı?"
+                    },
+                    {
+                        id: "9.3",
+                        code: "Madde 34.13",
+                        title: "Bina İçi Kabinet ve Sac Tava Topraklaması + 9x9cm Sarı Uyarı Kartı",
+                        desc: "Fatih Enerji Panosu toprak barasından kabinete ve her kattaki sac tava izolatörlü toprak baralarına ayrı 4mm² H07Z1-K topraklama kabloları çekildi mi? Tava uçları pabuç+cıvata ile topraklandı mı, kesintili tava geçişlerinde şönt (köprüleme) yapıldı mı ve her sac tava grubunda alttan görünür 9x9 cm sarı 'TOPRAKLAMA' kartı var mı?"
+                    }
+                ]
+            },
+            {
+                id: "cat-10",
+                title: "10. Fatih Enerji Panoları, Linye Buatları ve Etkileşimli Tahta Prizleri",
+                icon: "fa-plug-circle-bolt",
+                badge: "Madde 35",
+                items: [
+                    {
+                        id: "10.1",
+                        code: "Madde 35.2 - 35.7, 35.11.15",
+                        title: "Derslik Sayısına Uygun Pano Tipi ve İç Bileşenleri (TMŞ, KAKR, Sigortalar)",
+                        desc: "Derslik sayısına göre doğru pano seçildi mi? (Tip-1 ≤18 derslik: 3x25A AOS, 1xKAKR, 5x16A; Tip-2 ≤30 derslik: 3x32A AOS, 2xKAKR, 8x16A; Tip-3 ≤48 derslik: 3x50A TMŞ, 3x40A AOS, 3xKAKR, 11x16A; Tip-4 ≤66 derslik: 3x63A TMŞ, 2x32A AOS, 4xKAKR, 14x16A). Pano 1mm DKP sac, IP54, krem boyalı, 2 bölmeli göğüs saclı ve R-S-T sinyal lambalı mı?"
+                    },
+                    {
+                        id: "10.2",
+                        code: "Madde 35.8 & 35.11.9",
+                        title: "Okul Ana Panosundan Besleme (Sayaç Sonrası) ve Pano İçi İşçilik",
+                        desc: "Fatih Enerji Panosu beslemesi (N2XH 4x6/10/16mm²), okul ana panosunda sayaçtan sonra gelen 3'lü anahtarlı otomatik sigorta girişinden alındı mı? Pano içinde yatay bağlantılarda tribar, tüm çok telli kablolarda yüksük/pabuç, izolatörlü nötr/toprak barası ve girişi enerjili/çıkışı boş 1 adet 16A yedek sigorta var mı?"
+                    },
+                    {
+                        id: "10.3",
+                        code: "Madde 35.10 & 35.11.21 - 30",
+                        title: "Linye Buat (Max 3 Sınıf), Toplayıcı Buat (Max 6 Sınıf) ve Faz Dengesi",
+                        desc: "Koridordaki bir linye buatına (100x100x70mm, 4 köşesi vidalı, kelepçeli rekorlu, 4 no nikel sıra klemensli) en fazla 3 derslik (3x2.5mm² kablo) bağlandı mı? Derslik sayısı >9 ise linye buatları toplayıcı buatta (150x150x70mm, en fazla 6 derslik) birleşip panodaki linye sigortasına 3x4mm² kablo ile R-S-T fazlarına eşit yük dağılımıyla bağlandı mı?"
+                    },
+                    {
+                        id: "10.4",
+                        code: "Madde 35.11.32 & 35.12",
+                        title: "Pano ve Buat Etiketlemeleri + Silinmez Baskı Uyarı Yazısı",
+                        desc: "Pano dış kapağında yapıştırma OLMAYAN, 55 punto Arial Bold kırmızı çerçeveli silinmez baskı 'ACİL DURUMLAR HARİÇ PANO ENERJİSİNİ KESİNLİKLE KESMEYİNİZ!' yazısı var mı? İç kapakta poşet dosyada linye projesi, içeride vidalı sarı üzeri siyah etiketler (Linye-1, KABİNET, KAÇAK AKIM-1) ve koridor buatlarında 6x6cm kırmızı (L-1, TB-1) etiketler mevcut mu?"
+                    },
+                    {
+                        id: "10.5",
+                        code: "Madde 35.10.9 - 11 & 35.11.6",
+                        title: "Etkileşimli Tahta Prizi, Factor Laser Metal Kapak ve Faz/Nötr Yönü",
+                        desc: "Derslikteki çocuk korumalı topraklı priz, düz/yıldız tornavida ile açılamayan iki parçalı (iç/dış) metal koruma kapağı içine oynamayacak şekilde monte edildi mi? Priz bağlantısında faz ve nötr çapraz bağlanıp PVC'den geliş yönüne yakın delik FAZ (düz tahtada sol faz/sağ nötr, ters tahtada sağ faz/sol nötr) yapıldı mı ve metal kapağa 4x4cm kırmızı linye etiketi yapıştırıldı mı?"
+                    }
+                ]
+            }
+        ];
+
+        // State Storage Keys
+        const STORAGE_KEY_CHECKS = "fatih_faz4_checks_v1";
+        const STORAGE_KEY_NOTES = "fatih_faz4_notes_v1";
+        const STORAGE_KEY_META = "fatih_faz4_meta_v1";
+
+        let checkState = {};
+        let noteState = {};
+        let collapsedCategories = {};
+
+        // Initialize on Load
+        window.addEventListener("DOMContentLoaded", () => {
+            loadState();
+            renderChecklist();
+            updateStats();
+        });
+
+        function loadState() {
+            try {
+                const savedChecks = localStorage.getItem(STORAGE_KEY_CHECKS);
+                if (savedChecks) checkState = JSON.parse(savedChecks);
+
+                const savedNotes = localStorage.getItem(STORAGE_KEY_NOTES);
+                if (savedNotes) noteState = JSON.parse(savedNotes);
+
+                const savedMeta = localStorage.getItem(STORAGE_KEY_META);
+                if (savedMeta) {
+                    const meta = JSON.parse(savedMeta);
+                    const fields = [
+                        "meta-school", "meta-city", "meta-code", "meta-type",
+                        "meta-contractor", "meta-cab", "meta-counts", "meta-date",
+                        "meta-general-notes",
+                        "mem1-name", "mem1-title", "mem1-inst",
+                        "mem2-name", "mem2-title", "mem2-inst",
+                        "mem3-name", "mem3-title", "mem3-inst"
+                    ];
+                    fields.forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el && meta[id] !== undefined) el.value = meta[id];
+                    });
+                } else {
+                    // Default today's date
+                    const dateEl = document.getElementById("meta-date");
+                    if (dateEl) dateEl.valueAsDate = new Date();
+                }
+            } catch (e) {
+                console.error("Veri yükleme hatası:", e);
+            }
+        }
+
+        function saveMeta() {
+            try {
+                const fields = [
+                    "meta-school", "meta-city", "meta-code", "meta-type",
+                    "meta-contractor", "meta-cab", "meta-counts", "meta-date",
+                    "meta-general-notes",
+                    "mem1-name", "mem1-title", "mem1-inst",
+                    "mem2-name", "mem2-title", "mem2-inst",
+                    "mem3-name", "mem3-title", "mem3-inst"
+                ];
+                const meta = {};
+                fields.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) meta[id] = el.value;
+                });
+                localStorage.setItem(STORAGE_KEY_META, JSON.stringify(meta));
+            } catch (e) {
+                console.error("Meta kayıt hatası:", e);
+            }
+        }
+
+        function toggleItem(itemId) {
+            checkState[itemId] = !checkState[itemId];
+            localStorage.setItem(STORAGE_KEY_CHECKS, JSON.stringify(checkState));
+            renderChecklist();
+            updateStats();
+        }
+
+        function toggleCategoryAll(catId, targetState) {
+            const cat = CHECKLIST_DATA.find(c => c.id === catId);
+            if (!cat) return;
+            cat.items.forEach(item => {
+                checkState[item.id] = targetState;
+            });
+            localStorage.setItem(STORAGE_KEY_CHECKS, JSON.stringify(checkState));
+            renderChecklist();
+            updateStats();
+        }
+
+        function toggleAllItems(targetState) {
+            CHECKLIST_DATA.forEach(cat => {
+                cat.items.forEach(item => {
+                    checkState[item.id] = targetState;
+                });
+            });
+            localStorage.setItem(STORAGE_KEY_CHECKS, JSON.stringify(checkState));
+            renderChecklist();
+            updateStats();
+        }
+
+        function updateItemNote(itemId, value) {
+            noteState[itemId] = value;
+            localStorage.setItem(STORAGE_KEY_NOTES, JSON.stringify(noteState));
+        }
+
+        function toggleCollapse(catId) {
+            collapsedCategories[catId] = !collapsedCategories[catId];
+            renderChecklist();
+        }
+
+        function updateStats() {
+            let total = 0;
+            let onCount = 0;
+
+            CHECKLIST_DATA.forEach(cat => {
+                cat.items.forEach(item => {
+                    total++;
+                    if (checkState[item.id]) onCount++;
+                });
+            });
+
+            const offCount = total - onCount;
+            const percent = total > 0 ? Math.round((onCount / total) * 100) : 0;
+
+            document.getElementById("stat-total").textContent = total;
+            document.getElementById("stat-on").textContent = onCount;
+            document.getElementById("stat-off").textContent = offCount;
+            document.getElementById("stat-percent").textContent = `%${percent}`;
+            document.getElementById("progress-bar").style.width = `${percent}%`;
+
+            const badge = document.getElementById("print-summary-badge");
+            if (badge) {
+                badge.textContent = `Kontrol Özeti: ${onCount} / ${total} Madde ON (Uygun) - %${percent}`;
+                if (onCount === total) {
+                    badge.className = "text-xs font-bold px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-900 border border-emerald-400";
+                } else {
+                    badge.className = "text-xs font-bold px-3 py-1.5 rounded-xl bg-amber-50 text-amber-900 border border-amber-300";
+                }
+            }
+        }
+
+        function renderChecklist() {
+            const container = document.getElementById("checklist-container");
+            const searchQuery = (document.getElementById("search-input")?.value || "").toLowerCase().trim();
+            const statusFilter = document.getElementById("filter-status")?.value || "all";
+
+            container.innerHTML = "";
+
+            CHECKLIST_DATA.forEach(cat => {
+                // Filter items
+                const filteredItems = cat.items.filter(item => {
+                    const isOn = !!checkState[item.id];
+                    if (statusFilter === "on" && !isOn) return false;
+                    if (statusFilter === "off" && isOn) return false;
+
+                    if (searchQuery) {
+                        const haystack = `${item.id} ${item.code} ${item.title} ${item.desc} ${noteState[item.id] || ""}`.toLowerCase();
+                        return haystack.includes(searchQuery);
+                    }
+                    return true;
+                });
+
+                if (filteredItems.length === 0) return;
+
+                const catTotal = cat.items.length;
+                const catOn = cat.items.filter(i => !!checkState[i.id]).length;
+                const allCatOn = catOn === catTotal;
+                const isCollapsed = !!collapsedCategories[cat.id];
+
+                const sectionEl = document.createElement("section");
+                sectionEl.className = "category-card bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden";
+
+                // Category Header
+                const headerHTML = `
+                    <div class="bg-slate-800 text-white px-5 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="flex items-center gap-3 cursor-pointer" onclick="toggleCollapse('${cat.id}')">
+                            <div class="w-9 h-9 rounded-xl ${allCatOn ? 'bg-emerald-500 text-white' : 'bg-slate-700 text-red-300'} flex items-center justify-center shrink-0 transition">
+                                <i class="fa-solid ${allCatOn ? 'fa-check' : cat.icon}"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h3 class="font-bold text-sm sm:text-base tracking-tight">${cat.title}</h3>
+                                    <span class="hidden md:inline-block text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-700 text-slate-300">${cat.badge}</span>
+                                </div>
+                                <div class="text-xs text-slate-300 mt-0.5">
+                                    Tamamlanan: <strong class="${allCatOn ? 'text-emerald-400' : 'text-white'}">${catOn} / ${catTotal}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 self-end sm:self-center no-print">
+                            <button onclick="toggleCategoryAll('${cat.id}', true)" class="px-2.5 py-1.5 rounded-lg bg-emerald-600/90 hover:bg-emerald-500 text-white text-xs font-semibold transition flex items-center gap-1">
+                                <i class="fa-solid fa-check"></i>
+                                <span>Grubu ON Yap</span>
+                            </button>
+                            <button onclick="toggleCategoryAll('${cat.id}', false)" class="px-2.5 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold transition">
+                                OFF
+                            </button>
+                            <button onclick="toggleCollapse('${cat.id}')" class="w-8 h-8 rounded-lg bg-slate-700 hover:bg-slate-600 flex items-center justify-center text-slate-300">
+                                <i class="fa-solid ${isCollapsed ? 'fa-chevron-down' : 'fa-chevron-up'} text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                // Category Items Body
+                const rowsHTML = filteredItems.map(item => {
+                    const isOn = !!checkState[item.id];
+                    const itemNote = noteState[item.id] || "";
+
+                    return `
+                        <div class="check-row ${isOn ? 'row-on' : 'row-off'} p-4 border-b border-slate-100 last:border-b-0 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div class="flex-1 space-y-1">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <span class="px-2 py-0.5 rounded text-[11px] font-extrabold ${isOn ? 'bg-emerald-700 text-white' : 'bg-slate-200 text-slate-700'}">
+                                        #${item.id}
+                                    </span>
+                                    <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-red-50 text-red-700 border border-red-200">
+                                        ${item.code}
+                                    </span>
+                                    <h4 class="font-bold text-sm sm:text-base ${isOn ? 'text-emerald-950' : 'text-slate-800'}">
+                                        ${item.title}
+                                    </h4>
+                                </div>
+                                <p class="text-xs sm:text-sm ${isOn ? 'text-emerald-900/90' : 'text-slate-600'} leading-relaxed">
+                                    ${item.desc}
+                                </p>
+                                <!-- Optional Note Input per item -->
+                                <div class="pt-1.5">
+                                    <input
+                                        type="text"
+                                        value="${itemNote.replace(/"/g, '&quot;')}"
+                                        oninput="updateItemNote('${item.id}', this.value)"
+                                        placeholder="Bu madde için komisyon notu / eksiklik açıklaması ekle (isteğe bağlı)..."
+                                        class="note-input w-full sm:w-2/3 px-2.5 py-1 text-xs rounded-lg border border-slate-200 bg-white/80 text-slate-700 focus:border-emerald-500 outline-none"
+                                    >
+                                </div>
+                            </div>
+
+                            <!-- ON / OFF Button -->
+                            <div class="flex items-center justify-end shrink-0">
+                                <button
+                                    type="button"
+                                    onclick="toggleItem('${item.id}')"
+                                    class="toggle-btn ${isOn ? 'is-on' : 'is-off'} min-w-[145px] px-4 py-2.5 rounded-xl border-2 font-extrabold text-xs sm:text-sm flex items-center justify-between gap-3 cursor-pointer"
+                                    aria-pressed="${isOn}"
+                                >
+                                    <span class="flex items-center gap-2">
+                                        <i class="fa-solid ${isOn ? 'fa-circle-check text-white text-base' : 'fa-circle-xmark text-slate-400 text-base'}"></i>
+                                        <span>${isOn ? 'ON • UYGUN' : 'OFF • KONTROL'}</span>
+                                    </span>
+                                    <span class="w-3 h-3 rounded-full ${isOn ? 'bg-white' : 'bg-slate-400'}"></span>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join("");
+
+                sectionEl.innerHTML = `
+                    ${headerHTML}
+                    <div class="category-body ${isCollapsed ? 'hidden' : 'block'} divide-y divide-slate-100">
+                        ${rowsHTML}
+                    </div>
+                `;
+
+                container.appendChild(sectionEl);
+            });
+        }
+
+        function openExpertModal() {
+            document.getElementById("expert-modal").classList.remove("hidden");
+        }
+
+        function closeExpertModal() {
+            document.getElementById("expert-modal").classList.add("hidden");
+        }
+
+        function printDocument() {
+            // Reset filters before printing so all items appear in the official PDF printout
+            const statusFilter = document.getElementById("filter-status");
+            const searchInput = document.getElementById("search-input");
+            if (statusFilter && statusFilter.value !== "all") {
+                statusFilter.value = "all";
+            }
+            if (searchInput && searchInput.value !== "") {
+                searchInput.value = "";
+            }
+            renderChecklist();
+            setTimeout(() => {
+                window.print();
+            }, 150);
+        }
+    </script>
+</body>
+</html>
